@@ -1,0 +1,1355 @@
+{
+  "info": {
+    "_postman_id": "027e0bd4-97ee-45dd-813e-c4016478534b",
+    "name": "Atividade M1 - Produtos e ViaCEP",
+    "description": "Execute a pasta 01 com PostgreSQL e ViaCEP real. A pasta 02 exige o simulador e uma segunda instância; consulte README.md. O productId é preenchido pelo primeiro teste. Preços em centavos. Testes de CRUD inativam apenas o produto criado pela execução.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58527626",
+    "_collection_link": "https://go.postman.co/collection/58527626-027e0bd4-97ee-45dd-813e-c4016478534b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - CRUD e ViaCEP real",
+      "item": [
+        {
+          "name": "01 - Criar produto e salvar ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Produto criado\", function () { const p = pm.response.json(); pm.expect(p.id).to.be.a('string'); pm.expect(p.active).to.eql(true); pm.expect(p.distributionCenter).to.eql('Mogi das Cruzes'); pm.collectionVariables.set('productId', p.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto de teste M1\",\n  \"price\": 12990,\n  \"category\": \"atividade-m1\",\n  \"distributionCenter\": \"Mogi das Cruzes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 - Listar produtos ativos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Inclui produto criado\", function () { pm.expect(pm.response.json().some(p => p.id === pm.collectionVariables.get('productId'))).to.eql(true); pm.expect(pm.response.json().every(p => p.active)).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 - Buscar por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"ID correto\", function () { pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('productId')); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 - Categoria via Request Param",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Filtro correto\", function () { pm.expect(pm.response.json()).to.have.length.above(0); pm.expect(pm.response.json().every(p => p.category === 'atividade-m1')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product?category=atividade-m1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "atividade-m1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 - Categoria via Path Variable",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Filtro correto\", function () { pm.expect(pm.response.json()).to.have.length.above(0); pm.expect(pm.response.json().every(p => p.category === 'atividade-m1')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/category/atividade-m1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "category",
+                "atividade-m1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 - Quatro tipos de entrada da aula",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Header, path, param e body aceitos\", function () { pm.expect(pm.response.json()).to.have.length.above(0); pm.expect(pm.response.json().every(p => p.category === 'atividade-m1')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "categoryAsHeader",
+                "value": "atividade-m1"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/product/category/atividade-m1?categoryAsParam=atividade-m1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "category",
+                "atividade-m1"
+              ],
+              "query": [
+                {
+                  "key": "categoryAsParam",
+                  "value": "atividade-m1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 - Categorias divergentes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/category/atividade-m1?categoryAsParam=outra",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "category",
+                "atividade-m1"
+              ],
+              "query": [
+                {
+                  "key": "categoryAsParam",
+                  "value": "outra"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 - Top 5 mais caros",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Até 5 ativos em ordem decrescente\", function () { const a=pm.response.json(); pm.expect(a.length).to.be.within(1,5); pm.expect(a.every(p=>p.active)).to.eql(true); for(let i=1;i<a.length;i++) pm.expect(a[i-1].price).to.be.at.least(a[i].price); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/top5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "top5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09 - Mogi: disponível",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Disponibilidade true\", function () { pm.expect(pm.response.json()).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=08773380",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "08773380"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10 - CEP com hífen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Disponibilidade true\", function () { pm.expect(pm.response.json()).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=08773-380",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "08773-380"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "11 - Recife: cidade diferente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Disponibilidade false\", function () { pm.expect(pm.response.json()).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=50010000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "50010000"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12 - CEP mal formatado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=123",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "123"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "13 - CEP inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=99999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "99999999"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "14 - CEP ausente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15 - Produto inexistente na disponibilidade",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/inexistente/availability?cep=08773380",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "inexistente",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "08773380"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "16 - Atualizar para Recife",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Campos atualizados\", function () { const p=pm.response.json(); pm.expect(p.name).to.eql('Produto atualizado M1'); pm.expect(p.price).to.eql(15000); pm.expect(p.category).to.eql('atividade-m1-atualizada'); pm.expect(p.distributionCenter).to.eql('Recife'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto atualizado M1\",\n  \"price\": 15000,\n  \"category\": \"atividade-m1-atualizada\",\n  \"distributionCenter\": \"Recife\",\n  \"id\": \"{{productId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "17 - Recife: disponível após atualizar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Disponibilidade true\", function () { pm.expect(pm.response.json()).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=50010000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "50010000"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18 - Atualizar para Porto Alegre",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto de teste M1\",\n  \"price\": 12990,\n  \"category\": \"atividade-m1\",\n  \"distributionCenter\": \"Porto Alegre\",\n  \"id\": \"{{productId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "19 - Porto Alegre: disponível",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Disponibilidade true\", function () { pm.expect(pm.response.json()).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=90010000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "90010000"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "20 - Validar campos obrigatórios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "21 - Rejeitar preço negativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto de teste M1\",\n  \"price\": -1,\n  \"category\": \"atividade-m1\",\n  \"distributionCenter\": \"Mogi das Cruzes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "22 - Rejeitar centro inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto de teste M1\",\n  \"price\": 12990,\n  \"category\": \"atividade-m1\",\n  \"distributionCenter\": \"São Paulo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "23 - Atualização exige ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto de teste M1\",\n  \"price\": 12990,\n  \"category\": \"atividade-m1\",\n  \"distributionCenter\": \"Mogi das Cruzes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "24 - Atualizar inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto de teste M1\",\n  \"price\": 12990,\n  \"category\": \"atividade-m1\",\n  \"distributionCenter\": \"Mogi das Cruzes\",\n  \"id\": \"inexistente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "25 - Buscar inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "inexistente"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "26 - Inativar inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "inexistente"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "27 - Inativar produto criado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "28 - Inativo não aparece na lista",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Produto inativo oculto\", function () { pm.expect(pm.response.json().some(p=>p.id === pm.collectionVariables.get('productId'))).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "29 - Buscar inativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "30 - Disponibilidade de inativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/{{productId}}/availability?cep=08773380",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{productId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "08773380"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Resiliência com simulador",
+      "item": [
+        {
+          "name": "01 - Provedor HTTP 500 retorna 503",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 503', function () { pm.response.to.have.status(503); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(503); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=11111111",
+              "host": [
+                "{{resilienceBaseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{seedProductId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "11111111"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 - Tempo limite retorna 504",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 504', function () { pm.response.to.have.status(504); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(504); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=22222222",
+              "host": [
+                "{{resilienceBaseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{seedProductId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "22222222"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 - JSON inválido retorna 502",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 502', function () { pm.response.to.have.status(502); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(502); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=33333333",
+              "host": [
+                "{{resilienceBaseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{seedProductId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "33333333"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 - Resposta sem cidade retorna 502",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 502', function () { pm.response.to.have.status(502); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(502); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=44444444",
+              "host": [
+                "{{resilienceBaseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{seedProductId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "44444444"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 - Conexão interrompida retorna 503",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 503', function () { pm.response.to.have.status(503); });",
+                  "pm.test(\"Status coerente no corpo\", function () { pm.expect(pm.response.json().status).to.eql(503); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=55555555",
+              "host": [
+                "{{resilienceBaseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{seedProductId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "55555555"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 - Aplicação segue funcionando após falhas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Disponibilidade true\", function () { pm.expect(pm.response.json()).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=08773380",
+              "host": [
+                "{{resilienceBaseUrl}}"
+              ],
+              "path": [
+                "product",
+                "{{seedProductId}}",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "cep",
+                  "value": "08773380"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "resilienceBaseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "seedProductId",
+      "value": "dfc70678-865e-4505-9451-8ae8f49d5d61"
+    }
+  ]
+}

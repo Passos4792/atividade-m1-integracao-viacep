@@ -1,0 +1,13 @@
+$kind: http-request
+name: "17 - Recife: disponível após atualizar"
+url: "{{baseUrl}}/product/{{productId}}/availability?cep=50010000"
+method: GET
+queryParams:
+  cep: "50010000"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', function () { pm.response.to.have.status(200); });
+      pm.test("Disponibilidade true", function () { pm.expect(pm.response.json()).to.eql(true); });
+    language: text/javascript
+order: 17000

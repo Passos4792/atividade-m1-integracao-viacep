@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/product"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 400', function () { pm.response.to.have.status(400); });
+      pm.test("Status coerente no corpo", function () { pm.expect(pm.response.json().status).to.eql(400); });
+    language: text/javascript
+order: 20000

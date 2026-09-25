@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{baseUrl}}/product/top5"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', function () { pm.response.to.have.status(200); });
+      pm.test("Até 5 ativos em ordem decrescente", function () { const a=pm.response.json(); pm.expect(a.length).to.be.within(1,5); pm.expect(a.every(p=>p.active)).to.eql(true); for(let i=1;i<a.length;i++) pm.expect(a[i-1].price).to.be.at.least(a[i].price); });
+    language: text/javascript
+order: 8000

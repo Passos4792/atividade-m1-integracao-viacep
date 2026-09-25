@@ -1,0 +1,13 @@
+$kind: http-request
+name: "11 - Recife: cidade diferente"
+url: "{{baseUrl}}/product/{{productId}}/availability?cep=50010000"
+method: GET
+queryParams:
+  cep: "50010000"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', function () { pm.response.to.have.status(200); });
+      pm.test("Disponibilidade false", function () { pm.expect(pm.response.json()).to.eql(false); });
+    language: text/javascript
+order: 11000

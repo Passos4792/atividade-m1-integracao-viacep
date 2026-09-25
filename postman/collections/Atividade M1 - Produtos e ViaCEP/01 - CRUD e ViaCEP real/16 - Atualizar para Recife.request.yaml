@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/product"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Produto atualizado M1",
+      "price": 15000,
+      "category": "atividade-m1-atualizada",
+      "distributionCenter": "Recife",
+      "id": "{{productId}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', function () { pm.response.to.have.status(200); });
+      pm.test("Campos atualizados", function () { const p=pm.response.json(); pm.expect(p.name).to.eql('Produto atualizado M1'); pm.expect(p.price).to.eql(15000); pm.expect(p.category).to.eql('atividade-m1-atualizada'); pm.expect(p.distributionCenter).to.eql('Recife'); });
+    language: text/javascript
+order: 16000

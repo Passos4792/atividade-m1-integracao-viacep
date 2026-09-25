@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{resilienceBaseUrl}}/product/{{seedProductId}}/availability?cep=22222222"
+method: GET
+queryParams:
+  cep: "22222222"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 504', function () { pm.response.to.have.status(504); });
+      pm.test("Status coerente no corpo", function () { pm.expect(pm.response.json().status).to.eql(504); });
+    language: text/javascript
+order: 2000

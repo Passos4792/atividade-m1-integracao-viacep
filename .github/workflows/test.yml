@@ -1,0 +1,30 @@
+name: Testes Java e PostgreSQL
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: product
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d product"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Testes com PostgreSQL real e migrations Flyway
+        run: >-
+          mvn -B verify
+          -Dspring.datasource.url=jdbc:postgresql://localhost:5432/product
+          -Dspring.datasource.driver-class-name=org.postgresql.Driver
+          -Dspring.datasource.username=postgres
+          -Dspring.datasource.password=password

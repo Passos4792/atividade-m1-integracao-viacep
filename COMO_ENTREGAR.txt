@@ -1,0 +1,195 @@
+ATIVIDADE M1 — INTEGRAÇÃO DE SISTEMAS
+Java Spring Fundamentals — Integração com a API ViaCEP
+
+Prazo: [DEFINIR DATA]
+Substitua pelo prazo informado pelo professor. Nenhuma data foi presumida.
+
+O QUE DEVE SER ENTREGUE
+
+1. Link do repositório Git com o código-fonte.
+2. Collection do Postman exportada e incluída nesse repositório.
+
+O projeto foi preparado a partir do segundo ZIP fornecido. O código, a
+collection e os testes estão prontos. Ainda é necessário executar a collection
+na interface do Postman, exportá-la, publicar o repositório na sua conta e
+enviar os links na plataforma da disciplina.
+
+1 — EXTRAIR E IDENTIFICAR O PROJETO
+
+Extraia Atividade-M1-ViaCEP.zip para uma pasta no computador.
+Entre em aula-2-adicionando-novos-campos-main.
+Essa é a pasta que contém pom.xml, README.md, src e postman.
+Abra essa pasta no IntelliJ, VS Code ou outro editor de sua preferência.
+Leia o README.md para entender os endpoints e as regras da implementação.
+
+2 — PREPARAR O COMPUTADOR
+
+Você precisa de:
+- JDK 17: https://adoptium.net/temurin/releases/?version=17
+- Docker Desktop, usando containers Linux: https://www.docker.com/products/docker-desktop/
+- Postman Desktop: https://www.postman.com/downloads/
+- Git: https://git-scm.com/downloads
+- Conta no GitHub: https://github.com/
+- Internet para baixar dependências e consultar a ViaCEP.
+
+Maven não precisa ser instalado separadamente: o projeto inclui mvnw.cmd.
+Node.js é necessário apenas para os testes opcionais com simulador/Newman.
+
+Abra um PowerShell dentro da pasta do projeto e confira:
+
+java -version
+git --version
+docker --version
+
+Se java não for encontrado, confira a instalação do JDK, JAVA_HOME e PATH.
+Após instalar as ferramentas, feche e abra novamente o terminal.
+As ferramentas portáteis usadas na preparação não estão incluídas no ZIP.
+
+3 — SUBIR O BANCO E INICIAR A API
+
+Abra o Docker Desktop e aguarde estar funcionando.
+No PowerShell, dentro da pasta que contém pom.xml, execute:
+
+docker compose up -d --wait
+.\mvnw.cmd clean verify
+.\mvnw.cmd spring-boot:run
+
+O primeiro comando cria o PostgreSQL. O segundo compila e executa 27 testes
+automatizados com H2 no perfil de teste. O terceiro inicia a aplicação com
+PostgreSQL real. Aguarde a mensagem de inicialização da aplicação e do
+servidor na porta 8080. Mantenha o terminal aberto.
+
+Configuração local de demonstração:
+- Banco: product
+- Usuário: postgres
+- Senha: password
+- Porta do banco: 5432
+- API: http://localhost:8080/product
+
+Não é necessário executar os scripts SQL manualmente. O Flyway executa as
+migrations e cadastra os produtos de exemplo na primeira inicialização.
+Se já houver PostgreSQL usando a porta 5432, configure seu banco existente
+ou libere essa porta antes de usar o Compose. O README explica as variáveis.
+
+4 — TESTAR NO POSTMAN E EXPORTAR A COLLECTION
+
+4.1 Abra o Postman Desktop e clique em Import.
+4.2 Selecione:
+    postman/Atividade-M1.postman_collection.json
+4.3 Confira a variável da collection:
+    baseUrl = http://localhost:8080
+4.4 Execute a pasta "01 - CRUD e ViaCEP real" no Collection Runner.
+    Use uma iteração e mantenha a ordem das 30 requisições.
+    Não execute a pasta 02 sem preparar o simulador explicado no README.
+4.5 Confira se as 58 verificações passaram. O ID do produto é salvo
+    automaticamente pela primeira requisição; não precisa copiá-lo.
+4.6 Os testes verificam CRUD, validações, filtros, top 5 e disponibilidade:
+    - Mogi das Cruzes: CEP 08773380.
+    - Recife: CEP 50010000.
+    - Porto Alegre: CEP 90010000.
+    - Mesma cidade: true.
+    - Cidade diferente: false.
+    - CEP inválido: HTTP 400.
+    - CEP inexistente: HTTP 404.
+    - Produto inexistente ou inativo: HTTP 404.
+4.7 No menu da collection, escolha Export e selecione o formato v2.1.
+    Salve como Atividade-M1.postman_collection.json na pasta postman do
+    projeto, substituindo o arquivo importado, se necessário.
+    Exporte a COLLECTION; apenas um relatório de execução não a substitui.
+4.8 Se o professor solicitar evidência visual, salve uma captura dos
+    resultados do Runner em docs/evidencias antes de publicar.
+
+Para testar indisponibilidade, timeout e respostas inválidas, siga a seção
+"Resiliência reproduzível" do README. Ela explica como iniciar o simulador
+e a segunda instância da API e rodar a pasta 02: seis chamadas e 12
+verificações adicionais. O simulador exige Node.js e não altera a ViaCEP real.
+
+5 — CRIAR O REPOSITÓRIO NO GITHUB
+
+5.1 Entre na sua conta em https://github.com/ e crie um novo repositório.
+5.2 Nome sugerido: atividade-m1-integracao-viacep
+5.3 Use um repositório público se isso for permitido pela disciplina.
+    Se optar por privado, conceda acesso ao professor conforme orientação.
+5.4 Crie o repositório VAZIO: não adicione README, .gitignore ou licença
+    pelo formulário, porque o projeto local já contém os arquivos.
+5.5 Copie a URL HTTPS exibida, neste formato:
+    https://github.com/SEU_USUARIO/atividade-m1-integracao-viacep.git
+
+6 — ENVIAR O CÓDIGO E A COLLECTION AO REPOSITÓRIO
+
+Abra OUTRO PowerShell na pasta do projeto (a que contém pom.xml).
+Substitua SEU NOME, SEU_EMAIL e SEU_USUARIO pelos seus dados.
+O e-mail pode ser o endereço no-reply fornecido pela sua conta GitHub.
+
+git init -b main
+git config user.name "SEU NOME"
+git config user.email "SEU_EMAIL"
+git add .
+git commit -m "Conclui atividade M1 com CRUD, ViaCEP e collection Postman"
+git remote add origin https://github.com/SEU_USUARIO/atividade-m1-integracao-viacep.git
+git push -u origin main
+
+Conclua a autenticação da sua conta se o Git solicitar. Não coloque senhas
+ou tokens dentro dos arquivos do projeto.
+
+Envie o código extraído, não apenas o ZIP. O .gitignore já exclui target,
+arquivos de IDE, logs e .env. Confirme que src, pom.xml, .mvn, mvnw.cmd,
+docker-compose.yml, README.md, postman e os testes aparecem no repositório.
+
+Se modificar ou reexportar a collection depois da publicação, execute:
+
+git add .
+git commit -m "Atualiza collection e evidencias dos testes"
+git push
+
+Não é necessário repetir git init ou adicionar origin novamente.
+
+7 — CONFERIR A ENTREGA
+
+[ ] O repositório abre pelo link e o professor tem acesso.
+[ ] O código-fonte aparece extraído, incluindo src e pom.xml.
+[ ] A collection exportada está em postman/Atividade-M1.postman_collection.json.
+[ ] A aplicação inicia com PostgreSQL e Flyway.
+[ ] CRUD, busca por ID, categoria e top 5 continuam funcionando.
+[ ] As chamadas de disponibilidade retornam true e false corretamente.
+[ ] Os testes de validação e erros retornam os códigos esperados.
+[ ] Executei a collection no Postman e exportei a versão utilizada.
+[ ] Consultei o resultado do fluxo de testes na aba Actions do GitHub.
+[ ] Preenchi o prazo conforme a orientação do professor.
+
+O fluxo Actions já está no projeto e será disparado após o push. Aguarde o
+resultado; não considere que passou antes de conferir. Ele testa Java e
+migrations em PostgreSQL. As chamadas à ViaCEP real são validadas pela
+collection, não por esse fluxo automático.
+
+8 — TEXTO PARA ENVIAR NA PLATAFORMA DA DISCIPLINA
+
+Atividade M1 — Integração de Sistemas
+Aluno(a): [SEU NOME]
+Prazo: [DEFINIR DATA]
+
+Repositório com o código-fonte:
+https://github.com/SEU_USUARIO/atividade-m1-integracao-viacep
+
+Collection do Postman exportada e incluída no repositório:
+https://github.com/SEU_USUARIO/atividade-m1-integracao-viacep/blob/main/postman/Atividade-M1.postman_collection.json
+
+Instruções de execução e testes disponíveis no README.md do repositório.
+
+IMPORTANTE SOBRE O STATUS DA PREPARAÇÃO
+
+Foram executados 27 testes Java com PostgreSQL real e 36 requisições da
+collection pelo Newman (executor de collections do Postman), com 70
+verificações sem falhas. Também houve execução da suíte com H2.
+Os resultados estão em docs/VALIDACAO.md e docs/evidencias.
+
+A interface gráfica do Postman não foi operada durante a preparação.
+O repositório remoto não foi criado nem publicado: essas etapas dependem
+da sua conta e devem ser realizadas pelos passos acima.
+
+REFERÊNCIAS OFICIAIS
+
+ViaCEP: https://viacep.com.br/
+Importar no Postman: https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data
+Executar collections: https://learning.postman.com/docs/tests-and-scripts/running-collections/intro-to-collection-runs
+Publicar código no GitHub: https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github

@@ -1,0 +1,7 @@
+$kind: collection
+description: Execute a pasta 01 com PostgreSQL e ViaCEP real. A pasta 02 exige o simulador e uma segunda instância; consulte README.md. O productId é preenchido pelo primeiro teste. Preços em centavos. Testes de CRUD inativam apenas o produto criado pela execução.
+variables:
+  baseUrl: http://localhost:8080
+  resilienceBaseUrl: http://localhost:8081
+  productId: ""
+  seedProductId: dfc70678-865e-4505-9451-8ae8f49d5d61
