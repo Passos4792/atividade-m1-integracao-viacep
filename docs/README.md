@@ -1,5 +1,7 @@
 # Atividade M1 2509
 
+**LEIA:** [ATIVIDADE M1.docx](ATIVIDADE%20M1.docx)
+
 A atividade consiste em consultar a ViaCEP usando o CEP e o ID de um produto para verificar se a cidade é a mesma do seu centro de distribuição.
 
 Endpoint: `GET /product/{id}/availability?cep=08773380`
